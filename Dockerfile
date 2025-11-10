@@ -1,0 +1,2 @@
+FROM postgres:18
+ENV POSTGRES_PASSWORD=pg
