@@ -68,5 +68,16 @@ $ docker run --name postgres -p 5432:5432 -d postgres
 $ node --loader ts-node/esm --no-warnings ./src/fill-db/index.ts
   ## might be used with "down" option to clear the DB
 
-$ node --loader ts-node/esm --no-warnings ./src/<filename>
+$ node --loader ts-node/esm --no-warnings ./src/test-db-performance.ts
+```
+
+
+# Results
+
+```
+ℹ️ Running PostgreSQL 18.0 (Debian 18.0-1.pgdg13+3) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+🕐 "SELECT" started
+🕐 "SELECT: 200 queries" lasted 209ms
+ℹ️ Query execution time: 0...6ms; avg=1ms
+ℹ️ Shutting down DB pool...
 ```

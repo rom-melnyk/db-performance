@@ -1,5 +1,7 @@
 export function random(from: number, to: number): number {
-  return Math.floor(Math.random() * (Math.abs(to - from) + Math.min(from, to)))
+  return Math.floor(
+    Math.random() * Math.abs(to - from) + Math.min(from, to)
+  )
 }
 
 
