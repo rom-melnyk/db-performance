@@ -1,33 +1,20 @@
 import { connect, query, shutdown, testConnection } from "../pg-utils/index.ts"
-import { createRestaurantsTable } from "./restaurants.ts"
-import { createTablesTable } from "./tables.ts"
-
-async function existsTable(tableName: string) {
-  const { rows } = await query<{exists: boolean}>(`
-    SELECT EXISTS (
-      SELECT 1
-      FROM information_schema.tables
-      WHERE table_schema = 'public'
-        AND table_name = '${tableName}'
-    ) AS exists;`)
-
-  return rows[0].exists
-}
+import * as resto from "./restaurants.ts"
+import * as tables from "./tables.ts"
+import * as avail from "./availability.ts"
 
 ;(async () => {
   await connect()
   await testConnection()
 
+  const upDownFn = process.argv[2] === "down" ? "down" : "up"
+  console.info(`ℹ️ Going to perform ${upDownFn}() on the DB`)
+
   try {
-    const existRestaurants = await existsTable("Restaurants")
-    console.info(`ℹ️ The "Restaurants" table ${existRestaurants ? "exists" : "does not exist"}`)
-    if (!existRestaurants) await createRestaurantsTable()
-
-      const existTables = await existsTable("Tables")
-    console.info(`ℹ️ The "Tables" table ${existTables ? "exists" : "does not exist"}`)
-    if (!existTables) await createTablesTable()
-
-
+    const sequence = [resto, tables, avail]
+    for (let i = 0; i < sequence.length; i++) {
+      await sequence[i][upDownFn]()
+    }
   } catch (error) {
     console.error(error)
   } finally {

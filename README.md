@@ -65,6 +65,8 @@ WHERE WHERE Restaurants.rid = ... AND interval >= ... AND interval <= ...
 ```shell
 $ docker build -t postgres . --no-cache
 $ docker run --name postgres -p 5432:5432 -d postgres
+$ node --loader ts-node/esm --no-warnings ./src/fill-db/index.ts
+  ## might be used with "down" option to clear the DB
 
 $ node --loader ts-node/esm --no-warnings ./src/<filename>
 ```

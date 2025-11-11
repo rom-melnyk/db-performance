@@ -3,7 +3,7 @@ import { Tracer } from "../data-utils/time-utils.ts"
 import { query } from "../pg-utils/index.ts"
 
 
-export async function createRestaurantsTable() {
+export async function up() {
   const tracer = new Tracer("Restaurant")
 
   await query(`
@@ -12,9 +12,9 @@ export async function createRestaurantsTable() {
       name VARCHAR(30) NOT NULL
     );
   `)
+  await query(`ALTER SEQUENCE IF EXISTS restaurants_id_seq RESTART WITH 1;`)
   tracer.trace("create table")
 
-  // await query(`ALTER SEQUENCE IF EXISTS restaurants_id_seq RESTART WITH 1;`)
 
   const names = generateRestaurantNames()
   const insertQuery = `
@@ -27,6 +27,6 @@ export async function createRestaurantsTable() {
 }
 
 
-export async function dropRestaurantTable() {
-  await query("DROP TABLE Restaurants")
+export async function down() {
+  await query("DROP TABLE Restaurants CASCADE;")
 }
