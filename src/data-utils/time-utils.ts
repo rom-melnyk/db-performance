@@ -19,7 +19,7 @@ export class Tracer {
     }
 
     this.name = name
-    console.info(`🕐 ${name} started`)
+    console.info(`🕐 ${name}: started`)
   }
 
 
@@ -28,7 +28,7 @@ export class Tracer {
     this.stepNo++
     let msg = `· ${this.name}: (${this.stepNo})`
     if (name) msg += ` ${name}`
-    console.info(`🕐 ${msg} lasted ${formatTime(now - this.lastStepAt)}`)
+    console.info(`🕐 ${msg}: lasted ${formatTime(now - this.lastStepAt)}`)
     this.lastStepAt = now
   }
 
@@ -37,6 +37,6 @@ export class Tracer {
     const now = Date.now()
     let steps = `${this.stepNo || 1} step`
     if (this.stepNo > 1) steps += "s" // Pluralize
-    console.info(`🕐 "${this.name}: ${steps}" lasted in total ${formatTime(now - this.startedAt)}`)
+    console.info(`🕐 ${this.name}: ${steps} lasted in total ${formatTime(now - this.startedAt)}`)
   }
 }

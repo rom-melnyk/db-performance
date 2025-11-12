@@ -9,43 +9,74 @@ import { connect, query, shutdown, testConnection } from "./pg-utils/index.ts"
   await testConnection()
 
   try {
-    const queryTpl = `
-      SELECT a.tid, a.interval, a.bid
-      FROM availability AS a
-      WHERE tid = {{tid}}
-      AND interval >= '{{from}}'
-      AND interval < '{{to}}'
-    `
-
-    const times: number[] = []
-    const NUM_RUNS = 200
     const minTime = new Date(MIN_DATE).getTime()
     const maxTime = new Date(MAX_DATE).getTime()
 
-    const tracer = new Tracer("SELECT")
-
-    for (let i = 0; i < NUM_RUNS; i++) {
+    function generateFromToDate(): [string, string] {
       const fromTime = random(minTime, maxTime)
       const fromDate = new Date(fromTime)
       const toDate = new Date(fromDate)
       toDate.setTime(fromTime + 24 * 3600 * 1000)
 
-      const fromDateStr = fromDate.toJSON().substring(0, 10)
-      const toDateStr = toDate.toJSON().substring(0, 10)
-
-      const q = queryTpl
-        .replace("{{tid}}", `${random(1, 1000)}`)
-        .replace("{{from}}", `${fromDateStr}`)
-        .replace("{{from}}", `${toDateStr}`)
-
-      const timeNow = Date.now()
-      await query(q)
-      times.push(Date.now() - timeNow)
+      return [
+        fromDate.toJSON().substring(0, 10),
+        toDate.toJSON().substring(0, 10),
+      ]
     }
 
-    tracer.step(`${NUM_RUNS} queries`)
-    const avgTime = times.reduce((sum, t) => sum + t) / NUM_RUNS
-    console.info(`ℹ️ Query execution time: ${Math.min(...times)}...${Math.max(...times)}ms; avg=${round(avgTime)}ms`)
+    async function getRunningTime(fn: () => Promise<any>): Promise<number> {
+      const timeNow = Date.now()
+      await fn()
+      return Date.now() - timeNow
+    }
+
+    const testCases = [
+      {
+        name: "Table occupation per day",
+        query: `
+        SELECT tid, interval, bid
+        FROM Availability
+        WHERE tid = {{trid}} AND interval >= '{{from}}' AND interval < '{{to}}'
+        `,
+      },
+      {
+        name: "Does restaurant have free tables for a day?",
+        query: `
+          SELECT EXISTS (
+            SELECT 1
+            FROM Availability AS a
+            JOIN Tables AS tbl ON a.tid = tbl.id
+            WHERE tbl.rid = {{trid}} AND a.interval >= '{{from}}' AND a.interval < '{{to}}' AND a.bid IS NULL
+          )
+        `,
+      },
+    ]
+
+    const NUM_RUNS = 200
+
+    for (const testCase of testCases) {
+      const times: number[] = []
+      const tracer = new Tracer(testCase.name)
+
+      for (let i = 0; i < NUM_RUNS; i++) {
+        const [fromDate, toDate] = generateFromToDate()
+
+        const q = testCase.query
+          .replace("{{trid}}", `${random(1, 1000)}`)
+          .replace("{{from}}", `${fromDate}`)
+          .replace("{{from}}", `${toDate}`)
+
+
+        times.push(await getRunningTime(() => query(q)))
+      }
+
+      tracer.step(`${NUM_RUNS} queries`)
+
+      const avgTime = times.reduce((sum, t) => sum + t) / NUM_RUNS
+      console.info(`🕐 ${testCase.name} execution time: ${Math.min(...times)}...${Math.max(...times)}ms; avg=${round(avgTime)}ms`)
+
+      tracer.end()
+    }
   } catch (error) {
     console.error(error)
   } finally {
