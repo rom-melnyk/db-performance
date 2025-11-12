@@ -77,8 +77,13 @@ $ npm run db:test-performance
 
 ```
 ℹ️ Running PostgreSQL 18.0 (Debian 18.0-1.pgdg13+3) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
-🕐 "SELECT" started
-🕐 "SELECT: 200 queries" lasted 209ms
-ℹ️ Query execution time: 0...6ms; avg=1ms
+🕐 Table occupation per day: started
+🕐 · Table occupation per day: (1) 200 queries: lasted 1.3s
+🕐 Table occupation per day execution time: 3...21ms; avg=6.6ms
+🕐 Table occupation per day: 1 step lasted in total 1.3s
+🕐 Does restaurant have free tables for a day?: started
+🕐 · Does restaurant have free tables for a day?: (1) 200 queries: lasted 939ms
+🕐 Does restaurant have free tables for a day? execution time: 1...9ms; avg=4.7ms
+🕐 Does restaurant have free tables for a day?: 1 step lasted in total 939ms
 ℹ️ Shutting down DB pool...
 ```
