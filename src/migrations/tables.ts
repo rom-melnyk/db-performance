@@ -20,26 +20,23 @@ export async function up() {
   `)
   await query(`ALTER SEQUENCE IF EXISTS tables_id_seq RESTART WITH 1;`)
 
-  tracer.trace("create table")
+  tracer.step("create table")
 
 
   const { rows } = await query<{ min: number, max: number }>(`SELECT min(id) AS min, max(id) AS max FROM Restaurants`)
-  const { min, max } = rows[0]
+  const resto = rows[0]
 
   const clauses: string[] = []
-  for (let rid = min; rid <= max; rid++) {
+  for (let rid = resto.min; rid <= resto.max; rid++) {
     for (let tid = 0; tid < NUM_TABLES_PER_RESTAURANT; tid++) {
       clauses.push(`(${rid}, ${random(2, 6)})`)
     }
   }
 
-  const insertQuery = `
-    INSERT INTO Tables (rid, size)
-    VALUES
-    ${clauses.join(", ")};
-  `
+  const insertQuery = `INSERT INTO Tables (rid, size) VALUES ${clauses.join(", ")};`
   await query(insertQuery)
-  tracer.trace("insert into")
+  tracer.step("insert into")
+  tracer.end()
 }
 
 

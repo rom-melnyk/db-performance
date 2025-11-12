@@ -13,7 +13,7 @@ export async function up() {
     );
   `)
   await query(`ALTER SEQUENCE IF EXISTS restaurants_id_seq RESTART WITH 1;`)
-  tracer.trace("create table")
+  tracer.step("create table")
 
 
   const names = generateRestaurantNames()
@@ -23,7 +23,8 @@ export async function up() {
     ${names.map(n => `('${n}')`).join(", ")};
   `
   await query(insertQuery)
-  tracer.trace("insert into")
+  tracer.step("insert into")
+  tracer.end()
 }
 
 

@@ -1,3 +1,5 @@
+import { MAX_DATE, MIN_DATE } from "./constants.ts";
+import { round } from "./data-utils/format-utils.ts";
 import { random } from "./data-utils/random-utils.ts";
 import { Tracer } from "./data-utils/time-utils.ts";
 import { connect, query, shutdown, testConnection } from "./pg-utils/index.ts"
@@ -17,8 +19,8 @@ import { connect, query, shutdown, testConnection } from "./pg-utils/index.ts"
 
     const times: number[] = []
     const NUM_RUNS = 200
-    const minTime = new Date("2025/01/01").getTime()
-    const maxTime = new Date("2026/01/01").getTime()
+    const minTime = new Date(MIN_DATE).getTime()
+    const maxTime = new Date(MAX_DATE).getTime()
 
     const tracer = new Tracer("SELECT")
 
@@ -41,9 +43,9 @@ import { connect, query, shutdown, testConnection } from "./pg-utils/index.ts"
       times.push(Date.now() - timeNow)
     }
 
-    tracer.trace(`${NUM_RUNS} queries`)
+    tracer.step(`${NUM_RUNS} queries`)
     const avgTime = times.reduce((sum, t) => sum + t) / NUM_RUNS
-    console.info(`ℹ️ Query execution time: ${Math.min(...times)}...${Math.max(...times)}ms; avg=${Math.round(avgTime * 10) / 10}ms`)
+    console.info(`ℹ️ Query execution time: ${Math.min(...times)}...${Math.max(...times)}ms; avg=${round(avgTime)}ms`)
   } catch (error) {
     console.error(error)
   } finally {

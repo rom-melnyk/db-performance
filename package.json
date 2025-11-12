@@ -5,7 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "db:test-connection": "node --loader ts-node/esm --no-warnings ./src/test-connection.ts",
+    "db:migrate": "node --loader ts-node/esm --no-warnings ./src/migrations/index.ts",
+    "db:test-performance": "node --loader ts-node/esm --no-warnings ./src/test-db-performance.ts"
   },
   "keywords": [
     "postgres",
@@ -19,11 +21,11 @@
   "author": "Roman Melnyk <https://melnyk.site>",
   "license": "UNLICENSED",
   "dependencies": {
-    "pg": "^8.16.3",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "pg": "8.16.3",
+    "ts-node": "10.9.2",
+    "typescript": "5.9.3"
   },
   "devDependencies": {
-    "@types/pg": "^8.15.6"
+    "@types/pg": "8.15.6"
   }
 }
