@@ -68,7 +68,8 @@ $ docker run --name postgres -p 5432:5432 -d postgres
 $ npm run db:migrate
   ## might be used with "-- down" option to clear the DB
 
-$ node --loader ts-node/esm --no-warnings ./src/test-db-performance.ts
+$ npm run db:test-connection
+$ npm run db:test-performance
 ```
 
 
